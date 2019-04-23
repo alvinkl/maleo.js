@@ -13,14 +13,16 @@ export default class Document extends React.Component<DocumentProps, {}> {
     data,
     branch,
     html,
+    head,
     ...ctx
   }: DocumentContext) => {
-    return { html, preloadScripts, data, branch, ctx };
+    return { html, head, preloadScripts, data, branch, ctx };
   };
 
   static childContextTypes = {
     preloadScripts: PropTypes.array.isRequired,
     html: PropTypes.element.isRequired,
+    head: PropTypes.arrayOf(PropTypes.element),
     data: PropTypes.any,
     branch: PropTypes.any,
     ctx: PropTypes.any,
@@ -51,6 +53,7 @@ export default class Document extends React.Component<DocumentProps, {}> {
 export class Header extends React.Component<HeaderProps, {}> {
   static contextTypes = {
     preloadScripts: PropTypes.array.isRequired,
+    head: PropTypes.arrayOf(PropTypes.element),
   };
 
   preloadScripts = () => {
@@ -62,16 +65,14 @@ export class Header extends React.Component<HeaderProps, {}> {
   };
 
   render() {
-    const { children } = this.props;
+    const { children, ...props } = this.props;
+    const { head } = this.context;
 
     return (
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
-
-        {this.preloadScripts()}
-
+      <head lang="en" {...props}>
         {children}
+        {head}
+        {this.preloadScripts()}
       </head>
     );
   }

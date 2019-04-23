@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/",
+    "page": "./RootComponent",
+    "exact": true
+  },
+  {
+    "path": "/a",
+    "page": "./AComponent",
+    "exact": true
+  }
+]

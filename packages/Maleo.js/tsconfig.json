@@ -24,6 +24,9 @@
             "@utils/*": [
                 "src/utils/*"
             ],
+            "@context/*": [
+                "src/context/*"
+            ],
             "@routes/*": [
                 "src/routes/*"
             ],

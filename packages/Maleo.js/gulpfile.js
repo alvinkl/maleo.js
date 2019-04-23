@@ -20,6 +20,7 @@ const paths = {
   bin: 'src/bin/*.ts',
   routes: 'src/routes/**',
   default: 'src/default/*.ts',
+  context: 'src/context/*.ts',
 };
 
 let tasks = Object.keys(paths);

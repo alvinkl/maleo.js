@@ -1,0 +1,15 @@
+{
+  "name": "simple",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "maleo dev",
+    "build": "export NODE_ENV=production && maleo build",
+    "start": "node .maleo/server/server.js"
+  },
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-router-dom": "^5.0.0"
+  }
+}

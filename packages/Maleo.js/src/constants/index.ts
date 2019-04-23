@@ -22,6 +22,7 @@ export const SERVER_ASSETS_ROUTE: string = '/_assets/';
 export const SERVER_INITIAL_DATA: string = '__MALEO_INITIAL_DATA__';
 
 export const DIV_MALEO_ID: string = '_maleo_';
+export const HEAD_MALEO_CLASSNAME: string = '_maleo-head_';
 
 export const MALEO_PROJECT_ROOT: string = path.join(__dirname, '..', '..', '..');
 

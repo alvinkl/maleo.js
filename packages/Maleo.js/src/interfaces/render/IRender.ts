@@ -51,6 +51,7 @@ export interface DocumentProps extends DocumentCommons {
 export interface DocumentContext extends DocumentCommons {
   req?: Request;
   res?: Response;
+  head?: Array<typeof React.Component>;
   renderPage?: (fn?) => Promise<any>;
 }
 
@@ -128,7 +129,9 @@ export interface RenderParam {
 
   renderPage?: (
     param: RenderPageParams,
-  ) => (fn?: ModPageFn) => Promise<{ html: string; bundles: LoadableBundles[] }>;
+  ) => (
+    fn?: ModPageFn,
+  ) => Promise<{ html: string; head: Array<typeof React.Component>; bundles: LoadableBundles[] }>;
 
   preloadScripts: (
     dir: string,

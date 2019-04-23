@@ -25,6 +25,7 @@ import {
 import extractStats from './extract-stats';
 
 import { ContainerComponent } from '@render/_container';
+import Head, { defaultHead } from '@render/_head';
 
 // * HTML doctype * //
 const DOCTYPE = '<!DOCTYPE html>';
@@ -32,11 +33,10 @@ const DOCTYPE = '<!DOCTYPE html>';
 export const defaultRenderPage = ({ req, Wrap, App, routes, data, props }: RenderPageParams) => {
   return async (): Promise<{
     html: string;
+    head: Array<typeof React.Component>;
     bundles: LoadableBundles[];
   }> => {
-    const renderer = (element: React.ReactElement<any>): { html: string } => ({
-      html: renderToString(element),
-    });
+    const renderer = (element: React.ReactElement<any>): string => renderToString(element);
 
     const appContext = {};
 
@@ -68,9 +68,14 @@ export const defaultRenderPage = ({ req, Wrap, App, routes, data, props }: Rende
       </Loadable.Capture>,
     );
 
-    const { html, ...rest } = isPromise(asyncOrSyncRender)
-      ? await asyncOrSyncRender
-      : asyncOrSyncRender;
+    let html;
+    let head;
+
+    try {
+      html = isPromise(asyncOrSyncRender) ? await asyncOrSyncRender : asyncOrSyncRender;
+    } finally {
+      head = Head.rewind() || defaultHead();
+    }
 
     let reactLoadableJson = {};
 
@@ -89,7 +94,7 @@ export const defaultRenderPage = ({ req, Wrap, App, routes, data, props }: Rende
         filename: bundle.file,
       }));
 
-    return { html, bundles, ...rest };
+    return { html, bundles, head };
   };
 };
 
@@ -136,7 +141,7 @@ export const render = async ({
       return;
     }
 
-    const { bundles, html } = await renderPage({
+    const { bundles, html, head } = await renderPage({
       req,
       Wrap,
       App,
@@ -159,6 +164,7 @@ export const render = async ({
       branch,
       preloadScripts: scripts,
       html,
+      head,
       ...wrapProps,
       ...appProps,
     };
@@ -200,14 +206,22 @@ export const renderStatic = async ({
 
   // setup Document component & renderToString to client
   if (branch) {
-    const { html } = await renderPage({
-      req,
-      Wrap,
-      App,
-      routes,
-      data,
-      props: { wrap: wrapProps, app: appProps },
-    })();
+    let html = '';
+    let head;
+    try {
+      const rpResult = await renderPage({
+        req,
+        Wrap,
+        App,
+        routes,
+        data,
+        props: { wrap: wrapProps, app: appProps },
+      })();
+
+      html = rpResult.html;
+    } finally {
+      head = defaultHead();
+    }
 
     // Loads Loadable bundle first
 
