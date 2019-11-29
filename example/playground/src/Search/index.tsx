@@ -10,6 +10,9 @@ export class RoomsSearch extends React.Component<any, any> {
     if (store) {
       store.dispatch({ type: 'TEST', data: 'searchhh' });
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     return { data: { searchPage: true, a: 5 }, store };
   };
 

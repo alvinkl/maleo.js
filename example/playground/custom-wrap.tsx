@@ -19,14 +19,14 @@ export default class extends Wrap {
     return { data, store };
   };
 
-  static onBeforeRouteChange = async (currentLocation, nextLocation) => {
-    console.log('before route change', currentLocation, nextLocation);
-  };
+  // static onBeforeRouteChange = async (currentLocation, nextLocation) => {
+  //   console.log('before route change', currentLocation, nextLocation);
+  // };
 
-  static onAfterRouteChange = async (previousLocation, currentLocation) => {
-    console.log('after route change', previousLocation, currentLocation);
-    window.scrollTo(0, 0);
-  };
+  // static onAfterRouteChange = async (previousLocation, currentLocation) => {
+  //   console.log('after route change', previousLocation, currentLocation);
+  //   window.scrollTo(0, 0);
+  // };
 
   render() {
     const { Container, App, containerProps, appProps } = this.props;

@@ -20,22 +20,22 @@ export class _App extends React.PureComponent<AppProps, AppState> {
   prefetchCache = {};
   routeTimeout;
 
+  // Context Data is only for client
+  // Server still passes data from props
+  // TODO:
+  //  - refactor to make code more consistent, use context for both server and client
+  initialData = !__IS_SERVER__ ? this.context.data : this.props.data;
+
   state = {
-    // Context Data is only for client
-    // Server still passes data from props
-    // TODO:
-    //  - refactor to make code more consistent, use context for both server and client
-    data: !__IS_SERVER__ ? this.context.data : this.props.data,
     currentLocation: this.props.location,
     previousLocation: null,
   };
 
-  componentWillReceiveProps(nextProps: AppProps, nextContext) {
-    // update data from context
-    this.setState({
-      data: nextContext.data,
-    });
+  componentDidMount() {
+    this.initialData = null;
+  }
 
+  componentWillReceiveProps(nextProps: AppProps, nextContext) {
     const { location: nextLocation } = nextProps;
     const { location } = this.props;
 
@@ -53,33 +53,28 @@ export class _App extends React.PureComponent<AppProps, AppState> {
         // Wait until context has finished fetching all the initial props
         // to navigate and render new route
         clientRouteChange(nextLocation).then(() => {
-          // Hacky fix
-          // To prevent route changes when GIP promise has been resolved
-          // has to wait for all the code in GIP to be done then change route
-          this.routeTimeout = setTimeout(() => {
-            clearTimeout(this.routeTimeout);
+          this.setState(
+            {
+              currentLocation: nextLocation,
+              previousLocation: location,
+            },
+            () => {
+              // Run hook for after route changes
+              onAfterRouteChange(location, nextLocation);
+            },
+          );
 
-            this.setState(
-              {
-                currentLocation: nextLocation,
-                previousLocation: location,
-              },
-              () => {
-                // Run hook for after route changes
-                onAfterRouteChange(location, nextLocation);
-              },
-            );
-
-            this.setState({ previousLocation: null });
-          }, 101);
+          this.setState({ previousLocation: null });
         });
       });
     }
   }
 
   render() {
-    const { data, previousLocation, currentLocation } = this.state;
+    const { previousLocation, currentLocation } = this.state;
     const { routes } = this.props;
+
+    const data = this.initialData || this.context.data;
 
     const initialData = this.prefetchCache[currentLocation.pathname] || data;
 
