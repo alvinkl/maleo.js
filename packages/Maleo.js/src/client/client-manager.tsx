@@ -38,25 +38,31 @@ export class ClientManager extends React.PureComponent<ClientManagerProps> {
 
   state = {
     data: this.props.data || defaultData,
+    currentLocation: window.location,
+    previousLocation: null,
   };
 
   // only runs on client side rendering during route changes
   // wrapper will expected to be called for every route changes inside the wrapper
-  clientRouteChangesUpdate = async (location: Location) => {
+  clientRouteChangesUpdate = async (currentLocation: Location) => {
+    const { currentLocation: previousLocation } = this.state;
     const { routes, _global_ } = this.props;
 
     const ctx = { routes, _global_ };
-    const data = await matchAndLoadInitialProps(location.pathname, ctx);
+    const data = await matchAndLoadInitialProps(currentLocation.pathname, ctx);
 
     this.setState({
       data,
+      currentLocation,
+      previousLocation,
     });
   };
 
   render() {
-    const { data } = this.state;
+    const { data, currentLocation, previousLocation } = this.state;
     const { routes, hooks } = this.props;
 
+    console.log('client manager rerender');
     return (
       <ManagerContext.Provider
         value={{
@@ -65,6 +71,8 @@ export class ClientManager extends React.PureComponent<ClientManagerProps> {
           data,
           routes,
           hooks,
+          currentLocation,
+          previousLocation,
         }}>
         {this.props.children}
       </ManagerContext.Provider>
